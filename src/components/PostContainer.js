@@ -9,8 +9,8 @@ const postContainerStyles = {
 
 class PostContainer extends Component {
   render() {
-    let postList = this.props.posts.map(post => (
-      <Post {...post} />
+    let postList = this.props.posts.map((post, idx) => (
+      <Post key={idx} {...post} />
     ));
 
     return (
