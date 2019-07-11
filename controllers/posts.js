@@ -15,6 +15,8 @@ function getAllPosts(req, res) {
 function create(req, res) {
   console.log('Hit create')
   Post.create(req.body, function(err, post) {
-    console.log(post);
+    if (err) throw err;
+
+    res.status(200).json(post);
   })
 }

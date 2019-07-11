@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { Switch, Route, Link } from 'react-router-dom';
 import userService from './utils/userService';
+import { getAllPosts, createPost } from './utils/postService';
 import SignUpPage from './pages/SignUpPage/SignUpPage';
 import LoginPage from './pages/LoginPage/LoginPage';
 import PostContainer from './components/PostContainer';
@@ -18,20 +19,13 @@ class App extends Component {
   }
 
   async componentDidMount() {
-    let posts = await fetch('/api/posts').then(res => res.json());
+    let posts = await getAllPosts();
     this.setState({ posts });
   }
 
   handleSubmit = (e) => {
     e.preventDefault();
-    fetch('/api/posts', 
-    {
-      method: 'POST',
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(this.state.newPost)
-    })
+    createPost(this.state.newPost);
   }
 
   handleChange = (e) => {
@@ -46,6 +40,10 @@ class App extends Component {
   handleLogout = () => {
     userService.logout();
     this.setState({ user: null });
+  }
+
+  handleSignupOrLogin = () => {
+    this.setState({ user: userService.getUser() })
   }
 
   render() {
@@ -75,46 +73,54 @@ class App extends Component {
 
         <Switch>
           <Route exact path="/signup" render={({ history }) => 
-            <SignUpPage history={history} />
+            <SignUpPage 
+              history={history} 
+              handleSignupOrLogin={this.handleSignupOrLogin}
+            />
           } />
 
-          <Route exact path="/login" render={() => 
-            <LoginPage />
+          <Route exact path="/login" render={({ history }) => 
+            <LoginPage 
+              history={history}
+              handleSignupOrLogin={this.handleSignupOrLogin} 
+            />
           } />
         </Switch>
 
 
         <br />
-        {/* TODO: Refactor form into separate component */}
-        <form onSubmit={this.handleSubmit}>
-          <div className="field-wrapper">
-            <label>Title</label>
-            <input 
-              name="title" 
-              type="text" 
-              onChange={ this.handleChange }
-              value={ this.state.newPost.title } />
-          </div>
-          <div className="field-wrapper">
-            <label>Author</label>
-            <input 
-              name="author" 
-              type="text" 
-              onChange={ this.handleChange }
-              value={ this.state.newPost.author } />
-          </div>
-          <div className="field-wrapper">
-            <label>Body</label>
-            <input 
-              name="body" 
-              type="text" 
-              onChange={ this.handleChange }
-              value={ this.state.newPost.body } />
-          </div>
-          
-          <input type="submit" value="Submit" />
-        </form>
 
+        
+        { this.state.user &&
+          <form onSubmit={this.handleSubmit}>
+            <div className="field-wrapper">
+              <label>Title</label>
+              <input 
+                name="title" 
+                type="text" 
+                onChange={ this.handleChange }
+                value={ this.state.newPost.title } />
+            </div>
+            <div className="field-wrapper">
+              <label>Author</label>
+              <input 
+                name="author" 
+                type="text" 
+                onChange={ this.handleChange }
+                value={ this.state.newPost.author } />
+            </div>
+            <div className="field-wrapper">
+              <label>Body</label>
+              <input 
+                name="body" 
+                type="text" 
+                onChange={ this.handleChange }
+                value={ this.state.newPost.body } />
+            </div>
+            
+            <input type="submit" value="Submit" />
+          </form>
+        }
         { 
           this.state.posts.length
           ? <PostContainer posts={this.state.posts} />
