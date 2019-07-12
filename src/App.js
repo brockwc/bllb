@@ -13,7 +13,8 @@ class App extends Component {
     newPost: {
       title: "",
       author: "",
-      body: ""
+      body: "",
+      test: []
     },
     user: userService.getUser()
   }
@@ -30,7 +31,19 @@ class App extends Component {
 
   handleChange = (e) => {
     let newPost = { ...this.state.newPost }
-    newPost[e.target.name] = e.target.value;
+    console.log(this.state.newPost.test);
+
+    if (e.target.type !== "checkbox") {
+      newPost[e.target.name] = e.target.value;
+    } else {
+      if (e.target.checked) {
+        newPost.test.push(e.target.dataset.username)
+      } else {
+        newPost.test.filter(user => {
+          return !e.target.dataset.username
+        })
+      }
+    }
 
     this.setState({
       newPost
@@ -116,6 +129,46 @@ class App extends Component {
                 type="text" 
                 onChange={ this.handleChange }
                 value={ this.state.newPost.body } />
+            </div>
+
+            <div className="field-wrapper">
+              <label for="test">Checks</label>
+              
+              <input 
+                name="brock" 
+                type="checkbox" 
+                onChange={ this.handleChange }
+                data-username="brock"
+                checked={ this.state.newPost.test.includes("brock") }
+                />
+              <input 
+                name="tatty" 
+                type="checkbox" 
+                onChange={ this.handleChange }
+                data-username="tatty"
+                checked={ this.state.newPost.test.includes("tatty") }
+                />
+              <input 
+                name="tanya" 
+                type="checkbox" 
+                onChange={ this.handleChange }
+                data-username="tanya"
+                checked={ this.state.newPost.test.includes("tanya") }
+                />
+              <input 
+                name="trent" 
+                type="checkbox" 
+                onChange={ this.handleChange }
+                data-username="trent"
+                checked={ this.state.newPost.test.includes("trent") }
+                />
+              <input 
+                name="forrest" 
+                type="checkbox" 
+                onChange={ this.handleChange }
+                data-username="forrest"
+                checked={ this.state.newPost.test.includes("forrest") }
+                />
             </div>
             
             <input type="submit" value="Submit" />
